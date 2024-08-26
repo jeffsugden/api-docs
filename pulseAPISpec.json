@@ -1,0 +1,1136 @@
+openapi: 3.0.3
+info:
+  title: Pulse Enterprise API
+  description: >-
+    ### **PULSE Enterprise APIs**
+
+
+    **Version: Beta 1.0**
+
+
+    **APIs with a high degree of stability. Suitable for enterprise use.**
+
+
+    Our APIs have been designed to assist businesses in their compliance and
+    business operationsand are offered to entities defined as trading partners
+    under the Drug Supply Chain Security Act("DSCSA") and their solution
+    providers.
+
+
+    **Support:** For customer issues with these APIs, the following support
+    options are available:
+
+
+    - Email:
+    [pip-support@pulse.pharmacy](https://mailto:pip-support@pulse.pharmacy)
+        
+
+    ##### Customers need following authentication elements to call Pulse APIs.
+
+
+    - **API Key:** An API key is a unique customer identifier that is used to
+    authenticate API requests.
+        - Access Control Level: Customer/application.
+        - **Required: Yes, for all request**
+    - **Basic credentials:** Identify a particular user and what permissions or
+    access levels they have.
+        - Access Control Level: User Access permissions.
+        - **Required: Yes, for all request**
+    - **Handshake Token:** Issue permissions to an API caller to operate on
+    behalf of a Pulse profile.
+        - Access Control Level: Customer to customer
+        - Required: Required for specific calls and otherwise optional.
+    - **Correlation ID**
+        - A correlation ID is a unique identifier that is used to associate related API requests and responses with customer platform/apps. If you wish to attach a correlation ID to any request, please use a UUID and use the header X-Correlation-ID
+        - Required: Optional
+
+    Please obtain **Handshake Token** from your customer if you are requesting
+    non-public information on behalf of your customer.
+
+
+    _**You don’t need a handshake token to access your own profile
+    information.**_
+
+
+    If spend permissions are enabled for a Handshake Token, the token will allow
+    a caller to spend pulse points from the profile associated with the
+    Handshake Token. Please only share Handshake Tokens internally or with the
+    trusted vendors. You are responsible for the actions of API calls made using
+    your Handshake Token.
+
+
+    Pulse profile can generate multiple Handshake Token for use by others with
+    different permissions.
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: '{{baseUrl}}'
+paths:
+  /v1/profiles/profileName/lookup:
+    get:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile- Using Profile Name
+      description: >-
+        This endpoint retrieves profiles . It sends an HTTP GET request to the
+        specified URL with the search keywords as a query parameter. The
+        response will be in JSON format and will contain an array of profiles
+        along with their details such as pulseProfileId, profileName, and
+        address.
+
+
+        For example:  
+
+        If you send a request with the profile name "rocky", the response will
+        contain an array of profiles with their respective details.
+
+
+        **Response**
+
+
+        ```
+
+        {
+                "count": 0,
+                "profiles": [
+                    {
+                        "pulseProfileId": "",
+                        "profileName": "",
+                        "address": {
+                            "city": "",
+                            "stateCode": "",
+                            "stateName": ""
+                        }
+                    }
+                ]
+            }
+
+         ```
+      operationId: searchProfileUsingProfileName
+      parameters:
+        - name: search_text
+          in: query
+          schema:
+            type: string
+            example: Branch
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/GLN/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile- Using GLN
+      description: >-
+        This endpoint allows you to look up profiles based on GLN (Global
+        Location Number). Upon making a POST request to
+        `{{baseUrl}}/v1/profiles/GLN/lookup`, with a JSON payload in the raw
+        request body, you can retrieve profiles associated with the provided
+        GLN.
+
+
+        ### Request Body
+
+
+        - `gln` (string, required): The GLN for which the profiles need to be
+        looked up.
+            
+
+        ### Response
+
+
+        Upon a successful execution, the endpoint returns a JSON object with a
+        status code of 200 and the following structure:
+
+
+        ``` json
+
+        {
+            "count": 0,
+            "profiles": [
+                {
+                    "pulseProfileId": "",
+                    "profileName": "",
+                    "address": {
+                        "city": "",
+                        "stateCode": "",
+                        "stateName": ""
+                    }
+                }
+            ]
+        }
+
+         ```
+
+        The `count` indicates the number of profiles found, and the `profiles`
+        array contains the details of each profile, including the pulse profile
+        ID, profile name, and address information.
+      operationId: searchProfileUsingGln
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gln:
+                  type: string
+                  example: '0000855020659'
+            examples:
+              Search Profile- Using GLN:
+                value:
+                  gln: '0000855020659'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/DEA/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile - Using DEA Number
+      description: >-
+        This endpoint allows you to make an HTTP POST request to look up
+        profiles for a specific DEA number.
+
+
+        ### Request Body
+
+
+        The request should include a JSON payload in the raw request body type
+        with the following parameter:
+
+
+        - `deaNumber`: (string) The DEA number for which you want to look up
+        profiles.
+            
+
+        ### Response
+
+
+        Upon a successful execution, the endpoint will return a JSON response
+        with a status code of 200 and the following structure:
+
+
+        ``` json
+
+        {
+            "count": 0,
+            "profiles": [
+                {
+                    "pulseProfileId": "",
+                    "profileName": "",
+                    "address": {
+                        "city": "",
+                        "stateCode": "",
+                        "stateName": ""
+                    }
+                }
+            ]
+        }
+
+         ```
+
+        The `count` indicates the number of profiles found, and each `profile`
+        object includes `pulseProfileId`, `profileName`, and `address` details
+        such as `city`, `stateCode`, and `stateName`.
+      operationId: searchProfileUsingDeaNumber
+      parameters:
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deaNumber:
+                  type: string
+                  example: AB1028009
+            examples:
+              Search Profile - Using DEA Number:
+                value:
+                  deaNumber: AB1028009
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/license/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile - Using License Number
+      description: >-
+        # Profile License Lookup
+
+
+        This endpoint allows you to look up profiles based on the issuing state
+        code and license number.
+
+
+        ## Request Body
+
+
+        - `issuingStateCode` (string): The code of the state that issued the
+        license.
+
+        - `licenseKey` (string,UUID): The license number.
+            
+
+        ## Response
+
+
+        - `count` (number): The total count of profiles found.
+
+        - `profiles` (array): An array of profiles matching the lookup criteria.
+            - `pulseProfileId` (string): The ID of the profile.
+            - `profileName` (string): The name of the profile.
+            - `address` (object): The address details of the profile.
+                - `city` (string): The city of the address.
+                - `stateCode` (string): The state code of the address.
+                - `stateName` (string): The state name of the address.
+
+        ### Example
+
+
+        ``` json
+
+        {
+          "count": 0,
+          "profiles": [
+            {
+              "pulseProfileId": "",
+              "profileName": "",
+              "address": {
+                "city": "",
+                "stateCode": "",
+                "stateName": ""
+              }
+            }
+          ]
+        }
+
+         ```
+      operationId: searchProfileUsingLicenseNumber
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issuingStateCode:
+                  type: string
+                  example: NY
+                licenseNumber:
+                  type: string
+                  example: '22222'
+            examples:
+              Search Profile - Using License Number:
+                value:
+                  issuingStateCode: NY
+                  licenseNumber: '22222'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/address/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile -Using Address
+      description: >-
+        This HTTP POST request is used to look up profiles' addresses via the
+        endpoint {{baseUrl}}/v1/profiles/address/lookup. The request should
+        include a JSON payload with the address details such as zip code, street
+        address, city, and state code.
+
+
+        Upon successful execution, the API returns a JSON response with a status
+        code of 200 and a content type of application/json. The response
+        includes a count of profiles and an array of profile objects, each
+        containing a pulseProfileId, profileName, and address details including
+        city, state code, and state name.
+
+
+        ### Example Response
+
+
+        ``` json
+
+        {
+          "count": 0,
+          "profiles": [
+            {
+              "pulseProfileId": "",
+              "profileName": "",
+              "address": {
+                "city": "",
+                "stateCode": "",
+                "stateName": ""
+              }
+            }
+          ]
+        }
+
+         ```
+      operationId: searchProfileUsingAddress
+      parameters:
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: object
+                  properties:
+                    city:
+                      type: string
+                      example: Orlando
+                    stateCode:
+                      type: string
+                      example: FL
+                    streetAddress:
+                      type: string
+                      example: 1601 Park Center Dr.
+                    zipCode:
+                      type: string
+                      example: '32835'
+            examples:
+              Search Profile -Using Address:
+                value:
+                  address:
+                    city: Orlando
+                    stateCode: FL
+                    streetAddress: 1601 Park Center Dr.
+                    zipCode: '32835'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/NCPDP/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile- Using NCPDP Number
+      description: >-
+        ### Profile Lookup
+
+
+        This endpoint allows you to retrieve profiles based on NCPDP number.
+
+
+        **Request Body**
+
+
+        - ncpdpNumber (string, required): The NCPDP number for which profiles
+        need to be retrieved.
+            
+
+        **Response**
+
+
+        - Status: 200 OK
+
+        - Content-Type: application/json
+            
+
+        Example response:
+
+
+        ``` json
+
+        {
+            "count": 0,
+            "profiles": [
+                {
+                    "pulseProfileId": "",
+                    "profileName": "",
+                    "address": {
+                        "city": "",
+                        "stateCode": "",
+                        "stateName": ""
+                    }
+                }
+            ]
+        }
+
+         ```
+      operationId: searchProfileUsingNcpdpNumber
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ncpdpNumber:
+                  type: string
+                  example: '6409042'
+            examples:
+              Search Profile- Using NCPDP Number:
+                value:
+                  ncpdpNumber: '6409042'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/ppid/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile - Using Pulse Profile ID
+      description: >-
+        This endpoint allows you to look up profiles based on the
+        pulseProfileId.
+
+
+        ### Request
+
+
+        - Method: POST
+
+        - Endpoint: {{baseUrl}}/v1/profiles/ppid/lookup
+
+        - Body (raw, JSON):
+            
+            ``` json
+                  {
+                      "pulseProfileId": ""
+                  }
+            
+             ```
+            
+
+        ### Response
+
+
+        - Status: 200
+
+        - Content-Type: application/json
+
+        - Body:
+            
+            ``` json
+                  {
+                      "count": 0,
+                      "profiles": [
+                          {
+                              "pulseProfileId": "",
+                              "profileName": "",
+                              "address": {
+                                  "city": "",
+                                  "stateCode": "",
+                                  "stateName": ""
+                              }
+                          }
+                      ]
+                  }
+            
+             ```
+      operationId: searchProfileUsingPulseProfileId
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pulseProfileId:
+                  type: string
+                  example: '{{ProfileID}}'
+            examples:
+              Search Profile - Using Pulse Profile ID:
+                value:
+                  pulseProfileId: '{{ProfileID}}'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/FEIN/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: Search Profile - Using FEIN Number
+      description: >-
+        This endpoint allows you to make an HTTP POST request to look up
+        profiles based on FEIN (Federal Employer Identification Number).
+
+
+        ### Request
+
+
+        The request should be made to `{{baseUrl}}/v1/profiles/FEIN/lookup` with
+        a JSON payload in the raw request body type. The payload should include
+        the FEIN in the following format:
+
+
+        ``` json
+
+        {
+            "fein": "your_FEIN_here"
+        }
+
+        ### Response
+
+        Upon a successful execution (Status: 200), the response will be in JSON
+        format with the count of profiles and an array of profile details. Each
+        profile includes the pulseProfileId, profileName, and address details
+        such as city, stateCode, and stateName.
+
+        Example response:
+
+        ```json
+
+        {
+            "count": 0,
+            "profiles": [
+                {
+                    "pulseProfileId": "",
+                    "profileName": "",
+                    "address": {
+                        "city": "",
+                        "stateCode": "",
+                        "stateName": ""
+                    }
+                }
+            ]
+        }
+
+         ```
+      operationId: searchProfileUsingFeinNumber
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fein:
+                  type: string
+                  example: '631425245'
+            examples:
+              Search Profile - Using FEIN Number:
+                value:
+                  fein: '631425245'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+  /v1/profiles/{ProfileID}:
+    get:
+      tags:
+        - v1
+        - profiles
+      summary: Profile Retrieval
+      description: >-
+        This HTTP GET request retrieves the profile details for a specific
+        profile identified by the ProfileID in the URL.
+
+
+        ### Request Body
+
+
+        This request does not have a request body.
+
+
+        ### Response Body
+
+
+        The response will have a status code of 200 and a content type of
+        application/json. The response body will contain the profile details
+        including the profile name, contacts, FEIN, NCPDP, GLN, DEA, NDC Labeler
+        Code, business models, and licenses.
+
+
+        **In order to request any other profile information, a Handshake Key is
+        required.**
+
+
+        #### Example Response Body
+
+
+        ``` json
+
+        {
+            "profile": {
+                "profileName": "",
+                "contacts": [
+                    {
+                        "contactType": "",
+                        "name": "",
+                        "phoneNumber": "",
+                        "email": "",
+                        "isGroupEmail": ""
+                    }
+                ],
+                "fein": [],
+                "ncpdp": [
+                    {
+                        "id": ""
+                    }
+                ],
+                "gln": [
+                    {
+                        "id": "",
+                        "tags": [
+                            ""
+                        ],
+                         "privacyStatus": ""
+                    }
+                ],
+                "dea": [
+                    {
+                        "id": "",
+                        "privacyStatus": ""
+                    }
+                ],
+                "ndcLabelerCode": [],
+                "businessModels": "",
+                "licenses": [
+                    {
+                        "licenseNumber": "",
+                        "licenseKey": "",
+                        "licenseName": "",
+                        "stateCode": "",
+                        "stateName": "",
+                        "licenseTypeDescription": ""
+                    }
+                ]
+            }
+        }
+
+         ```
+      operationId: profileRetrieval
+      parameters:
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-handshake-key
+          in: header
+          schema:
+            type: string
+            example: '{{x-handshake-key}}'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                200 response:
+                  value: {}
+      security:
+        - basicAuth: []
+    parameters:
+      - name: ProfileID
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/profiles/{ProfileID}/atp/status:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: ATP Status Check
+      description: >-
+        # Check ATP Status
+
+
+        This endpoint enables the client to check the ATP (Authorized Trading
+        Partner) status for a specific profile.
+
+
+        ## Request
+
+
+        - Method: POST
+
+        - Endpoint: {{baseUrl}}/v1/profiles/{{ProfileID}}/atp/status
+
+        - Headers:
+            - Content-Type: application/json
+            - Include ProfileID in request URL
+
+        ## Response
+
+
+        The response for this request will be a JSON object with the following
+        properties:
+
+
+        - atpStatusDescription (string): Description of the ATP status.
+
+        - atpStatusTitle (string): Title of the ATP status.
+
+        - pulseProfileId (string): ID of the pulse profile.
+
+        - defaultAccountBalance (number): Default account balance.
+
+        - costOfService (number): Cost of service.
+
+        - isATPStatusVerified (boolean): Indicates if the ATP status is
+        verified.
+
+        - isMonetized (boolean): Indicates if the ATP status is monetized.
+            
+
+        ```
+           {
+            "atpStatusDescription": "",
+            "atpStatusTitle": "",
+            "pulseProfileId": "",
+            "defaultAccountBalance": 0.0,
+            "costOfService": 0.0,
+            "isATPStatusVerified": "",
+            "isMonetized": ""
+        }
+
+         ```
+      operationId: atpStatusCheck
+      parameters:
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+        - name: x-handshake-key
+          in: header
+          schema:
+            type: string
+            example: '{{x-handshake-key}}'
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+      responses:
+        '200':
+          description: ''
+      security:
+        - basicAuth: []
+    parameters:
+      - name: ProfileID
+        in: path
+        required: true
+        schema:
+          type: string
+  /v1/licenses/status/lookup:
+    post:
+      tags:
+        - v1
+        - profiles
+      summary: License Status Check
+      description: >-
+        ### Profile Licenses Status Lookup
+
+
+        This endpoint allows you to look up the status of licenses associated
+        with a specific profile.
+
+
+        #### Request Body
+
+
+        - `licenseIdsList` (array of objects) - A list of license IDs for which
+        the status needs to be looked up. Each object contains the following
+        keys:
+            - `licenseKey` (string) - The license key for the license.
+
+        #### Response
+
+
+        Upon a successful execution, the endpoint returns a JSON object with the
+        following fields:
+
+
+        - `remainingPulsePointsBalance` (number) - The remaining pulse points
+        balance.
+
+        - `costOfCall` (number) - The cost of the call.
+
+        - `licenses` (array of objects) - An array of license objects, each
+        containing the following keys:
+            - `licenseKey` (string) - The license key.
+            - `licenseNumber` (string) - The license number.
+            - `licenseName` (string) - The name of the license.
+            - `stateCode` (string) - The state code of the license.
+            - `isActive` (string) - The status of the license (active or inactive).
+            - `licenseTypeDescription` (string) - The description of the license type.
+            - `issueDate` (string) - The date of issue of the license.
+            - `expiryDate` (string) - The expiry date of the license.
+            - `status` (string) - The status of the license.
+            - `address` (string) - The address associated with the license.
+            - `isRefreshedWithin14Days` (boolean) - Indicates if the license information has been refreshed within the last 14 days.
+        - `noOfStaleLicenses` (number) - The number of stale licenses.
+
+        - `noOfLicensesCheckedWithinAllowedDuration` (number) - The number of
+        licenses checked within the allowed duration.
+
+        - `noOfLicensesCharged` (number) - The number of licenses charged.
+            
+
+        #### Request Example
+
+
+        ``` json
+
+        {
+            "licenseIdsList": [
+                {
+                    "licenseKey": "ABC123"
+                }
+            ]
+        }
+
+         ```
+
+        **Response Example**
+
+
+        ``` json
+
+        {
+            "remainingPulsePointsBalance": 0.0,
+            "costOfCall": 0.0,
+            "licenses": [
+                {
+                    "licenseKey": "",
+                    "licenseNumber": "*****",
+                    "licenseName": "*****",
+                    "stateCode": "*****",
+                    "isActive": "*****",
+                    "licenseTypeDescription": "*****",
+                    "issueDate": "*****",
+                    "expiryDate": "*****",
+                    "status": "*****",
+                    "address": "*****",
+                    "isRefreshedWithin14Days": null
+                }
+            ],
+            "noOfStaleLicenses": 0,
+            "noOfLicensesCheckedWithinAllowedDuration": 0,
+            "noOfLicensesCharged": 0
+        }
+         ```
+      operationId: licenseStatusCheck
+      parameters:
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string
+            example: '{{X-Correlation-ID}}'
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+            example: '{{X-api-key}}'
+        - name: x-handshake-key
+          in: header
+          schema:
+            type: string
+            example: '{{x-handshake-key}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                licenseKeys:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      licenseKey:
+                        type: string
+                        example: d6fb683b-19d4-11ef-bb54-0ad721ea230b
+                  example:
+                    - licenseKey: d6fb683b-19d4-11ef-bb54-0ad721ea230b
+            examples:
+              License Status Check:
+                value:
+                  licenseKeys:
+                    - licenseKey: d6fb683b-19d4-11ef-bb54-0ad721ea230b
+      responses:
+        '200':
+          description: ''
+      security:
+        - basicAuth: []
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+tags:
+  - name: v1
+  - name: profiles
